@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+}
+
+.main-wrapper {
+  width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.game-wrapper {
+  width: 1006px;
+  height: 506px;
+  position: relative;
+  overflow: hidden;
+}
+
+canvas {
+  background-color: rgba(0, 0, 0, 1);
+  border: solid;
+  position: absolute;
+  top: 0px;
+  z-index: 1;
+}
+
+.snake_game_score {
+  position: absolute;
+  margin: 0;
+  top: 35px;
+  right: 26px;
+  color: #aaa;
+  z-index: 2;
+}
+
+#menu_area {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  z-index: 10;
+  color: red;
+  background: gray;
+  text-align: center;
+}
