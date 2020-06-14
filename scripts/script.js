@@ -265,3 +265,7 @@ startButton.onclick = function() {
   clickStartButton();
   loop();
 }
+
+document.getElementById('restart').onclick = function() {
+  location.reload()
+}
