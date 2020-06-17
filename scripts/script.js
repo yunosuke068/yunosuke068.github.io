@@ -172,7 +172,7 @@ SnakeHead.prototype.collisionDetect = function() {
 
 // SnakeHeadのeatTargetメソッド。
 // ターゲットセルを獲得した時の処理。
-SnakeHead.prototype.eatTargest = function () {
+SnakeHead.prototype.eatTarget = function () {
   if ((this.x === targetCell.x) && (this.y === targetCell.y)) {
     targetCell.x = random(1, 99)*10;
     targetCell.y = random(1, 49)*10;
