@@ -2,8 +2,14 @@ const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 const myAnchor = document.querySelector('a');
 
-const width = canvas.width;
-const height = canvas.height;
+const width = canvas.width; // ゲームエリアの幅
+const height = canvas.height; // ゲームエリアの高さ
+
+/* Snake Gameで使用されるグローバル変数 */
+let rAF; // requestAnimationFrame()メソッドを格納しておくためのグローバル変数
+var count = 0; // SnakeBodyの生成数を数えるためのグローバル変数
+var bodys = []; // bodyオブジェクト格納ようのリスト
+var head; // SnakeHeadオブジェクトの格納用のグローバル変数
 
 // randomメソッド。引数の数値の範囲から整数をランダムに生成する。
 function random(min, max) {
@@ -17,6 +23,47 @@ function sleep(waitMsec) {
   // 指定ミリ秒間だけループさせる（CPUは常にビジー状態）
   while (new Date() - startMsec < waitMsec);
 }
+
+// hiddenMenuメソッド。メニューのstartボタンを押すとmenuが消える。
+document.getElementById("menu_area").style.display ="block"; // menu_area:メニューの初期値の設定
+function hiddenMenu() {
+  const menu = document.getElementById('menu_area');
+	menu.style.display ="none";
+}
+
+// menuのスタートボタンをクリックした時の処置
+const startButton = document.querySelector('button');
+startButton.onclick = function() {
+  hiddenMenu(); // メニューの非表示
+  count = 0;
+  bodys = [];
+  head = new SnakeHead(50, 25, 'green', null, 0); // SnakeHeadオブジェクトの生成
+  head.setControls(); // headをキーイベントで操作できるように設定
+  snake_game(); // snake_gameの開始
+}
+
+// gameOverMenuメソッド。
+// ゲーオーバーした時のメニュー画面の表示とrequestAnimationFrameの停止。
+document.getElementById("welcome").style.display = "block"; // welcome:メニューに表示される文字の初期値の設定
+document.getElementById("again").style.display = "none"; // again:メニューに表示される文字の初期値の設定
+function gameOverMenu() {
+  cancelAnimationFrame(rAF); // snake_gameの停止（requestAnimationFrameを停止している）。
+  document.getElementById("menu_area").style.display ="block"; // メニューを表示
+	document.getElementById('welcome').style.display ="none"; // welcomeブロックを非表示
+  document.getElementById('again').style.display ="block"; // againブロックを表示
+}
+
+// restartボタンを押した時の処理
+document.getElementById('restart').onclick = function() {
+  cancelAnimationFrame(rAF);
+  hiddenMenu();
+  count = 0;
+  bodys = [];
+  head = new SnakeHead(50, 25, 'green', null, 0);
+  head.setControls();
+  snake_game();
+}
+
 
 
 /* Cellクラス */
@@ -71,6 +118,7 @@ SnakeHead.prototype.update = function() {
 SnakeHead.prototype.setControls = function() {
   var _this = this;
   window.onkeydown = function(e) {
+    //console.log(e.keyCode);
     if(e.keyCode === 65) {
       if(_this.direction !== 'right'){
         _this.direction = 'left';
@@ -87,13 +135,16 @@ SnakeHead.prototype.setControls = function() {
       if(_this.direction !== 'down'){
         _this.direction = 'up';
       }
+    } else if (e.keyCode === 81) { // キルキー Q
+      console.log('GameOver');
+      gameOverMenu();
     }
   }
 }
 
-// SnakeHeadのcheckCollisionメソッド。
+// SnakeHeadのreachBorderメソッド。
 // ゲームエリアの描画範囲の縁に達した時の処理。縁に達した時に反対方向から出てくる。
-SnakeHead.prototype.checkCollision = function() {
+SnakeHead.prototype.reachBorder = function() {
   var _this = this;
   if (_this.x >= width) {
     this.x = 10;
@@ -110,14 +161,8 @@ SnakeHead.prototype.checkCollision = function() {
 }
 
 // SnakeHeadのcollisionDetectメソッド。
-// ターゲットセルを獲得した時の処理。headがbodyに衝突した時の処理。
+// headがbodyに衝突した時の処理。
 SnakeHead.prototype.collisionDetect = function() {
-  if ((this.x === targetCell.x) && (this.y === targetCell.y)) {
-    targetCell.x = random(1, 99)*10;
-    targetCell.y = random(1, 49)*10;
-    head.score += 1;
-  }
-
   for (var i=0; i<bodys.length; i++) {
     if ((this.x === bodys[i].x) && (this.y === bodys[i].y)){
       this.exists = false;
@@ -125,6 +170,15 @@ SnakeHead.prototype.collisionDetect = function() {
   }
 }
 
+// SnakeHeadのeatTargetメソッド。
+// ターゲットセルを獲得した時の処理。
+SnakeHead.prototype.eatTargest = function () {
+  if ((this.x === targetCell.x) && (this.y === targetCell.y)) {
+    targetCell.x = random(1, 99)*10;
+    targetCell.y = random(1, 49)*10;
+    head.score += 1;
+  }
+}
 
 /* SnakeBodyクラス */
 // SnakeBodyクラスのコンストラクター。Cellクラスを継承。
@@ -153,6 +207,8 @@ SnakeBody.prototype.update = function() {
   }
 }
 
+
+
 /* TargetCellクラス */
 // TargetCellコンストラクター。Cellクラスを継承する。
 function TargetCell(x, y, color, exists) {
@@ -167,11 +223,6 @@ TargetCell.prototype.draw = function() {
   ctx.fillRect(this.x, this.y, this.size, this.size);
 }
 
-
-// snake game
-var bodys = []; // bodyオブジェクト保存ようのリスト
-var head = new SnakeHead(50, 25, 'green', null, 0); // SnakeHeadのインスタンスを作成する。一度だけ実行すれば良い。
-head.setControls(); // headに対してsetControlsメソッドを呼び出す。一度だけ実行すれば良い。
 // TargetCellのインスタンスを作成する。
 var targetCell = new TargetCell(
   random(2, 99),
@@ -180,8 +231,10 @@ var targetCell = new TargetCell(
   true
 );
 
-var count = 0;
-function loop() {
+
+
+/* Snake Game メイン処理部分*/
+function snake_game() {
   try {
     ctx.fillStyle = 'rgba(0, 0, 0, 1)';
     ctx.fillRect(0, 0, width, height);
@@ -192,28 +245,30 @@ function loop() {
     targetCell.draw();
 
     // bodys配列中のbodyの数がheadのscoreに達するまで繰り返される。
-    while (bodys.length < head.score){
-      // SnakeBodyのインスタンスを作成する。
-      var body = new SnakeBody(
-        head.x,
-        head.y,
-        head.color,
-        count
-      );
-      bodys.push(body); // bodys配列にbodyを追加する。
-      count = count + 1;
-    }
-
+    if(head.score > 0){
+      while (bodys.length < head.score*5){
+        // SnakeBodyのインスタンスを作成する。
+        var body = new SnakeBody(
+          head.x,
+          head.y,
+          head.color,
+          count
+        );
+        bodys.push(body); // bodys配列にbodyを追加する。
+        count = count + 1;
+      }
+    };
     // bodysの全てにupdateメソッドとdrawメソッドを実行する。
     for (var i=bodys.length-1; i>=0; i--) {
-      bodys[i].update();
-      bodys[i].draw();
+      bodys[i].update(); // bodys[i]の座標を更新
+      bodys[i].draw(); // bodys[i]を描画
     }
 
-    head.update();
-    head.draw();
-    head.checkCollision();
-    head.collisionDetect();
+    head.update(); // headの座標を更新
+    head.draw(); // headの描画
+    head.reachBorder(); // headがゲームエリアの境界に達した時の処理
+    head.collisionDetect(); // headがbodyの座標と被った時の処理
+    head.eatTarget(); // ターゲットセルを獲得した時の処理
 
     if (!(head.exists)) {
       throw new Error('Game over');
@@ -222,50 +277,9 @@ function loop() {
     myAnchor.textContent = head.score;
 
     sleep(50);
-    requestAnimationFrame(loop); //　このメソッドで再実行が行われる。
+    rAF = requestAnimationFrame(snake_game); //　このメソッドで再実行が行われる。
   } catch (e) {
     console.log(e.message);
-    clickStartButton();
     gameOverMenu();
   }
-
-}
-
-// clickStartButtonメソッド。メニューのstartボタンを押すとmenuが消える。
-document.getElementById("menu_area").style.display ="block";
-function clickStartButton() {
-  const menu = document.getElementById('menu_area');
-  if(menu.style.display=="block"){
-		// noneで非表示
-		menu.style.display ="none";
-	}else{
-		// blockで表示
-		menu.style.display ="block";
-	}
-}
-
-// gameOverMenuメソッド。メニュー画面の切り替え。
-document.getElementById("welcome").style.display = "block";
-document.getElementById("again").style.display = "none";
-function gameOverMenu() {
-  const welcome = document.getElementById('welcome');
-  const start_again = document.getElementById('again');
-  if(welcome.style.display=="block"){
-		welcome.style.display ="none";
-    start_again.style.display ="block";
-	}else if(start_again.style.display=="block"){
-    welcome.style.display ="block";
-    start_again.style.display ="none";
-	}
-}
-
-// menuのスタートボタンをクリックした時の処置
-const startButton = document.querySelector('button');
-startButton.onclick = function() {
-  clickStartButton();
-  loop();
-}
-
-document.getElementById('restart').onclick = function() {
-  location.reload()
 }
