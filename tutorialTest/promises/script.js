@@ -7,7 +7,7 @@ let promise = fetch('coffee.jpg');
 
 // fetchメソッドはPromiseを返し、thenの引数としてResponseオブジェクトを渡す。
 // Blobオブジェクトはファイルに似たオブジェクト
-let promise2 = promise.then(respose => {
+let promise2 = promise.then(response => {
   if (!response.ok) { // fetch()のResponseが成功したかを判定し、失敗の場合はerror
     throw new Error('HTTP error! status: ${response.status}');
   } else { // respose.okがtrueで成功した場合はblobを返す
