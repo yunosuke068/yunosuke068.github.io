@@ -2,7 +2,7 @@
 
 */
 
-let promise = fetch('coffee.jpg');
+let promise = fetch('cofee.jpg');
 
 
 // fetchメソッドはPromiseを返し、thenの引数としてResponseオブジェクトを渡す。
@@ -30,3 +30,7 @@ let promise3 = promise2.then(myBlob => {
   // body要素にimg要素を追加する
   document.body.appendChild(image);
 })
+
+let errorCase = promise3.catch(e => {
+  console.log('There has been a problem with your fetch operation: ' + e.message);
+});
