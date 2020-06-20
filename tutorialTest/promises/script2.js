@@ -35,7 +35,7 @@ let description = fetchAndDecode('description.txt', 'text');
 // 上記３つのfetchメソッドのpromiseが正常に実行された場合のみ実行される
 // then引数のエグゼキュータは配列内の3つのPromiseが満たされた場合のみ実行される
 // 同期コードを使用して結果を変数に格納する
-Promis.all([coffee, tea, description]).then(values => {
+Promise.all([coffee, tea, description]).then(values => {
   consol.log(values);
 
   let objectURL1 = URL.createObjectURL(values[0]);
