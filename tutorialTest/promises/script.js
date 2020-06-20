@@ -2,7 +2,7 @@
 
 */
 
-let promise = fetch('cofee.jpg');
+let promise = fetch('coffee.jpg');
 
 
 // fetchメソッドはPromiseを返し、thenの引数としてResponseオブジェクトを渡す。
