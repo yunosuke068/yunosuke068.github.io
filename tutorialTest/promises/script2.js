@@ -24,10 +24,10 @@ function fetchAndDecode(url, type) { // fetchする対象のurlと型を渡す
     }
   })
   .catch(e => {
-    console.log('There has been a problem with your fetch operation for resources "${url}": ' + e.message);
+    console.log(`There has been a problem with your fetch operation for resources "${url}": ` + e.message);
   })
   .finally(() => {
-    console.log('fetch attempt for "${url}" finished.');
+    console.log(`fetch attempt for "${url}" finished.`);
   });
 }
 
