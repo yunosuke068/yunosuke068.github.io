@@ -16,7 +16,7 @@ function fetchAndDecode(url, type) { // fetchする対象のurlと型を渡す
     if(!response.ok) { // fetchメソッドのresponseが成功したかを判定
     throw new Error('HTTP error! status: ${response.status}');
     } else {
-      if(type === 'text') {
+      if(type === 'blob') {
         return response.blob();
       } else if(type === 'text') {
         return response.text();
