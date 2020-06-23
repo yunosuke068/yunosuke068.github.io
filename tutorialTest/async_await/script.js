@@ -1,4 +1,6 @@
 async function myFetch() {
+  // = await Promiseオブジェクトを返すもの
+  // awaitはPromiseが返されるのを待機する。返されるまではasync functionを維持停止すつ
   let response = await fetch('coffee.jpg');
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
