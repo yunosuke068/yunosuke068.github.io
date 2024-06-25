@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display ID</title>
+</head>
+<body>
+    <h1>パスパラメータから取得したIDを表示します</h1>
+    <p id="display-id">ID: </p>
+
+    <script>
+        // 現在のURLを取得
+        const url = new URL(window.location.href);
+
+        // URLのパスパラメータからidを取得
+        const id = url.pathname.split('/').pop();
+
+        // 取得したidを画面上に表示
+        document.getElementById('display-id').textContent = `ID: ${id}`;
+    </script>
+</body>
+</html>
