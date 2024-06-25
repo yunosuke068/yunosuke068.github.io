@@ -6,19 +6,22 @@
     <title>Display ID</title>
 </head>
 <body>
-    <h1>パスパラメータから取得したIDを表示します</h1>
+    <h1>クエリパラメータから取得したIDを表示します</h1>
     <p id="display-id">ID: </p>
 
     <script>
         // 現在のURLを取得
         const url = new URL(window.location.href);
 
-        // URLのパスパラメータからidを取得
-        const pathParts = url.pathname.split('/');
-        const id = pathParts[pathParts.length - 1];
+        // URLのクエリパラメータからidを取得
+        const id = url.searchParams.get('id');
 
         // 取得したidを画面上に表示
-        document.getElementById('display-id').textContent = `ID: ${id}`;
+        if (id) {
+            document.getElementById('display-id').textContent = `ID: ${id}`;
+        } else {
+            document.getElementById('display-id').textContent = 'IDが指定されていません';
+        }
     </script>
 </body>
 </html>
