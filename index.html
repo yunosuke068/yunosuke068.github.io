@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display ID</title>
+    <title>API Request</title>
 </head>
 <body>
-    <h1>クエリパラメータから取得したIDを表示します</h1>
+    <h1>APIにリクエストを送る</h1>
     <p id="display-id">ID: </p>
+    <button id="send-request">APIリクエストを送信</button>
+    <p id="api-response">APIレスポンス: </p>
 
     <script>
         // 現在のURLを取得
@@ -22,6 +24,24 @@
         } else {
             document.getElementById('display-id').textContent = 'IDが指定されていません';
         }
+
+        // ボタンのクリックイベントを設定
+        document.getElementById('send-request').addEventListener('click', () => {
+            if (id) {
+                // APIリクエストを送信
+                fetch(`https://yourapi.com/endpoint?id=${id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // APIレスポンスを画面上に表示
+                        document.getElementById('api-response').textContent = `APIレスポンス: ${JSON.stringify(data)}`;
+                    })
+                    .catch(error => {
+                        document.getElementById('api-response').textContent = `エラー: ${error}`;
+                    });
+            } else {
+                document.getElementById('api-response').textContent = 'IDが指定されていません。APIリクエストを送信できません。';
+            }
+        });
     </script>
 </body>
 </html>
