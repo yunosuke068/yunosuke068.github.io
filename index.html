@@ -6,8 +6,9 @@
     <title>API Request</title>
 </head>
 <body>
-    <h1>APIにリクエストを送る</h1>
+    <h1>RAGを実行する</h1>
     <p id="display-id">ID: </p>
+    <input type="text" id="input-text" placeholder="テキストを入力">
     <button id="send-request">APIリクエストを送信</button>
     <p id="api-response">APIレスポンス: </p>
 
@@ -27,9 +28,11 @@
 
         // ボタンのクリックイベントを設定
         document.getElementById('send-request').addEventListener('click', () => {
-            if (id) {
+            const inputText = document.getElementById('input-text').value;
+
+            if (id && inputText) {
                 // APIリクエストを送信
-                fetch(`https://yourapi.com/endpoint?id=${id}`)
+                fetch(`https://yourapi.com/endpoint?id=${id}&text=${encodeURIComponent(inputText)}`)
                     .then(response => response.json())
                     .then(data => {
                         // APIレスポンスを画面上に表示
@@ -39,7 +42,7 @@
                         document.getElementById('api-response').textContent = `エラー: ${error}`;
                     });
             } else {
-                document.getElementById('api-response').textContent = 'IDが指定されていません。APIリクエストを送信できません。';
+                document.getElementById('api-response').textContent = 'IDとテキストの両方を入力してください。';
             }
         });
     </script>
